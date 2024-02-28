@@ -1,7 +1,9 @@
-﻿using Content.Data;
+﻿using System.Collections.Generic;
+using Content.Data;
 using Content.Infrastructure.Services.PersistentData;
 using Content.Infrastructure.Services.SaveLoad;
 using Content.Infrastructure.States.Interfaces;
+using Content.Items;
 
 namespace Content.Infrastructure.States
 {
@@ -38,16 +40,48 @@ namespace Content.Infrastructure.States
             _persistentDataService.Inventory = await _saveLoadService.LoadInventory() ?? CreateNewInventory();
         }
 
-        private InventoryData CreateNewInventory() => new()
+        private InventoryData CreateNewInventory()
         {
-            ItemSlots = new ItemSlotData[]
+            InventoryData inventoryData = new InventoryData
             {
-                new ItemSlotData()
+                ItemSlots = new ItemSlotData[30]
+            };
+
+            for (int i = 0; i < inventoryData.ItemSlots.Length; i++)
+            {
+                inventoryData.ItemSlots[i] = new ItemSlotData
                 {
-                    ID = "Uninitialized",
-                    Quantity = -1
-                }
+                    Item = GetRandomItem(),
+                    Quantity = UnityEngine.Random.Range(1, 5)
+                };
             }
-        };
+
+            return inventoryData;
+        }
+
+        private ItemBase GetRandomItem()
+        {
+            List<ItemBase> itemVariations = new List<ItemBase>
+            {
+                new BodyItem
+                {
+                    ID = 0,
+                    Name = "Test Body Item",
+                    MaxStackQuantity = 1,
+                    Weight = UnityEngine.Random.Range(1, 5),
+                    Defence = UnityEngine.Random.Range(1, 10),
+                },
+                new HeadItem
+                {
+                    ID = 0,
+                    Name = "Test Head Item",
+                    MaxStackQuantity = 1,
+                    Weight = UnityEngine.Random.Range(1, 5),
+                    Defence = UnityEngine.Random.Range(1, 10),
+                },
+            };
+
+            return itemVariations[UnityEngine.Random.Range(0, itemVariations.Count)];
+        }
     }
 }

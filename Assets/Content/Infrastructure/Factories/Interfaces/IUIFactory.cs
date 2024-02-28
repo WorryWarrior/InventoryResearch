@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Content.Menu;
+using Cysharp.Threading.Tasks;
 
 namespace Content.Infrastructure.Factories.Interfaces
 {
@@ -7,6 +8,7 @@ namespace Content.Infrastructure.Factories.Interfaces
         UniTask WarmUp();
         void CleanUp();
         UniTask CreateUIRoot();
-       // UniTask<InventoryHUDController> CreateInventoryHud();
+        UniTask<InventoryHUDController> CreateInventoryHUD();
+        UniTask<InventorySlotController> CreateInventorySlot();
     }
 }

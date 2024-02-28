@@ -3,6 +3,7 @@ using Content.Infrastructure.Factories;
 using Content.Infrastructure.Factories.Interfaces;
 using Content.Infrastructure.SceneManagement;
 using Content.Infrastructure.Services.Input;
+using Content.Infrastructure.Services.Inventory;
 using Content.Infrastructure.Services.Logging;
 using Content.Infrastructure.Services.PersistentData;
 using Content.Infrastructure.Services.SaveLoad;
@@ -35,6 +36,8 @@ namespace Content.Infrastructure.Scopes
             builder.Register<ILoggingService, LoggingService>(Lifetime.Singleton);
             builder.Register<IPersistentDataService, PersistentDataService>(Lifetime.Singleton);
             builder.Register<ISaveLoadService, SaveLoadServiceJsonFile>(Lifetime.Singleton);
+            //builder.Register<ISaveLoadService, SaveLoadServicePlayerPrefs>(Lifetime.Singleton);
+            builder.Register<IInventoryService, InventoryService>(Lifetime.Singleton);
         }
 
         private void ConfigureFactories(IContainerBuilder builder)

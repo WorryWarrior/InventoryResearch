@@ -2,6 +2,7 @@
 using Content.Infrastructure.SceneManagement;
 using Content.Infrastructure.Services.SaveLoad;
 using Content.Infrastructure.States.Interfaces;
+using Content.Menu;
 using Cysharp.Threading.Tasks;
 
 namespace Content.Infrastructure.States
@@ -41,16 +42,15 @@ namespace Content.Infrastructure.States
         private async void OnMetaSceneLoaded(SceneName sceneName)
         {
             await ConstructUIRoot();
-            //await ConstructSelectionMenu();
+            await ConstructInventoryHUD();
         }
 
         private async UniTask ConstructUIRoot() => await _uiFactory.CreateUIRoot();
 
-        /*private async Task ConstructSelectionMenu()
+        private async UniTask ConstructInventoryHUD()
         {
-            await _uiFactory
-                .CreateSelectionMenu()
-                .ContinueWith(it => it.Result.Initialize(), TaskScheduler.FromCurrentSynchronizationContext());
-        }*/
+            InventoryHUDController inventoryHUDController = await _uiFactory.CreateInventoryHUD();
+            await inventoryHUDController.Initialize();
+        }
     }
 }

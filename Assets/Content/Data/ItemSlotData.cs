@@ -1,12 +1,14 @@
 ﻿using System;
-using Content.Items;
+using Content.Gameplay.Items;
+using Content.StaticData.Converters;
+using Newtonsoft.Json;
 
 namespace Content.Data
 {
     [Serializable]
     public class ItemSlotData
     {
-        public ItemBase Item { get; set; }
-        public int Quantity { get; set; }
+        public InventoryItem InventoryItem { get; set; }
+        public int Quantity { get; set; } = -1;
     }
 }

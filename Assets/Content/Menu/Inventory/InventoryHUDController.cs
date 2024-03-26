@@ -1,56 +1,79 @@
 ﻿using System;
 using Content.Data;
+using Content.Gameplay.Items;
+using Content.Infrastructure.AssetManagement;
 using Content.Infrastructure.Services.Inventory;
 using Content.Infrastructure.Services.Logging;
-using Content.Items;
 using Content.UI.Windows;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using VContainer;
 
-namespace Content.Menu
+namespace Content.Menu.Inventory
 {
     public class InventoryHUDController : MonoBehaviour
     {
         [SerializeField] private InventoryHUDView inventoryHUDView = null;
         [SerializeField] private WindowBase armourPopup = null;
+        [SerializeField] private WindowBase ammoPopup = null;
 
         private IInventoryService _inventoryService;
         private ILoggingService _loggingService;
 
+        private IAssetProvider _assetProvider;
+
         [Inject]
         private void Construct(
             IInventoryService inventoryService,
+            IAssetProvider assetProvider,
             ILoggingService loggingService
         )
         {
             _inventoryService = inventoryService;
             _loggingService = loggingService;
+            _assetProvider = assetProvider;
         }
 
         public async UniTask Initialize()
         {
-            _inventoryService.OnInventorySlotUpdated += index => RefreshInventorySlot(inventoryHUDView.GetInventorySlot(index));
+            // Warm up sprite provider
+            _inventoryService.OnInventorySlotUpdated += async index => await RefreshInventorySlot(index);
 
             inventoryHUDView.OnInventorySlotsSwapRequested += SwapInventorySlots;
 
             await inventoryHUDView.CreateInventorySlots(_inventoryService.InventorySize);
+            await inventoryHUDView.CreateInventoryDragPreview();
+
             RefreshAllInventorySlots();
         }
 
-        public void ShowItemPopup(int inventorySlotIndex)
+        public async UniTask ShowItemPopup(int inventorySlotIndex)
         {
-            if (_inventoryService.TryGetInventoryItem(inventorySlotIndex, out ItemSlotData itemSlotData))
+            if (_inventoryService.TryGetInventoryItem(inventorySlotIndex, out ItemSlotData itemSlot))
             {
-                switch (itemSlotData.Item.ItemType)
+                InventoryPopupData inventoryPopupData = new InventoryPopupData
                 {
-                    case ItemType.Body:
-                    case ItemType.Head:
-                        ShowArmourPopup(inventorySlotIndex, itemSlotData);
+                    InventorySlotData = itemSlot,
+                    InventorySlotIcon = await _assetProvider.Load<Sprite>(itemSlot.InventoryItem.Id)
+                };
+
+                _loggingService.LogMessage(itemSlot.InventoryItem.ItemType.ToString());
+
+                switch (itemSlot.InventoryItem.ItemType)
+                {
+                    case ItemType.Body or ItemType.Head:
+                        ShowPopup(armourPopup, inventorySlotIndex, inventoryPopupData, () =>
+                        {
+                            _loggingService.LogMessage("Defence item accepted");
+                        });
                         return;
-                    case ItemType.Bullet:
+                    case ItemType.Ammo:
+                        ShowPopup(ammoPopup, inventorySlotIndex, inventoryPopupData, () =>
+                        {
+                            _loggingService.LogMessage("Ammo item accepted");
+                        });
                         return;
-                    case ItemType.Potion:
+                    case ItemType.Heal:
                         return;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -58,10 +81,15 @@ namespace Content.Menu
             }
         }
 
-        private void RefreshInventorySlot(InventorySlotController inventorySlotController)
+        private async UniTask RefreshInventorySlot(int inventorySlotIndex)
         {
+            InventorySlotController inventorySlotController = inventoryHUDView.GetInventorySlot(inventorySlotIndex);
+
             if (_inventoryService.TryGetInventoryItem(inventorySlotController.SlotIndex, out ItemSlotData itemSlot))
             {
+                Sprite itemSprite = await _assetProvider.Load<Sprite>(itemSlot.InventoryItem.Id);
+
+                inventorySlotController.UpdateSlotItemIcon(itemSprite);
                 inventorySlotController.UpdateSlotItemQuantity(itemSlot.Quantity);
             }
             else
@@ -70,27 +98,27 @@ namespace Content.Menu
             }
         }
 
-        private void RefreshAllInventorySlots()
+        private async void RefreshAllInventorySlots()
         {
             for (int i = 0; i < _inventoryService.InventorySize; i++)
             {
-                RefreshInventorySlot(inventoryHUDView.GetInventorySlot(i));
+                await RefreshInventorySlot(i);
             }
         }
 
         private void SwapInventorySlots(int firstSlotIndex, int secondSlotIndex) =>
             _inventoryService.SwapInventoryItems(firstSlotIndex, secondSlotIndex);
 
-        private void ShowArmourPopup(int inventorySlotIndex, ItemSlotData inventorySlotData)
+        private void ShowPopup(WindowBase popup, int inventorySlotIndex, InventoryPopupData inventoryPopupData,
+            Action onPopupAccepted = null)
         {
-            armourPopup.Show(inventorySlotData, inventorySlotData.Item.Name)
+            popup.Show(inventoryPopupData, inventoryPopupData.InventorySlotData.InventoryItem.Name)
                 .Then(intent =>
                 {
-                    //_loggingService.LogMessage(intent.ToString());
-
                     switch (intent)
                     {
                         case WindowCloseIntent.Accepted:
+                            onPopupAccepted?.Invoke();
                             break;
                         case WindowCloseIntent.Rejected:
                             _inventoryService.DeleteInventoryItem(inventorySlotIndex);

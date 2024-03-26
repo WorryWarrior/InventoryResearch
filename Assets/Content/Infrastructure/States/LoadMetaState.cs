@@ -3,6 +3,7 @@ using Content.Infrastructure.SceneManagement;
 using Content.Infrastructure.Services.SaveLoad;
 using Content.Infrastructure.States.Interfaces;
 using Content.Menu;
+using Content.Menu.Inventory;
 using Cysharp.Threading.Tasks;
 
 namespace Content.Infrastructure.States
@@ -51,6 +52,11 @@ namespace Content.Infrastructure.States
         {
             InventoryHUDController inventoryHUDController = await _uiFactory.CreateInventoryHUD();
             await inventoryHUDController.Initialize();
+        }
+
+        private async UniTask ConstructEquipmentHUD()
+        {
+
         }
     }
 }

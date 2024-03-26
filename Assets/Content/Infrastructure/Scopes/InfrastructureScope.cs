@@ -35,6 +35,7 @@ namespace Content.Infrastructure.Scopes
             builder.Register<IInputService, InputService>(Lifetime.Singleton);
             builder.Register<ILoggingService, LoggingService>(Lifetime.Singleton);
             builder.Register<IPersistentDataService, PersistentDataService>(Lifetime.Singleton);
+            //builder.Register<ISaveLoadService, SaveLoadServiceRemoteServer>(Lifetime.Singleton);
             builder.Register<ISaveLoadService, SaveLoadServiceJsonFile>(Lifetime.Singleton);
             //builder.Register<ISaveLoadService, SaveLoadServicePlayerPrefs>(Lifetime.Singleton);
             builder.Register<IInventoryService, InventoryService>(Lifetime.Singleton);

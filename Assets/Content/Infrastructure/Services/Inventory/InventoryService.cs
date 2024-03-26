@@ -1,7 +1,7 @@
 ﻿using Content.Data;
+using Content.Gameplay.Items;
 using Content.Infrastructure.Services.PersistentData;
 using Content.Infrastructure.Services.SaveLoad;
-using Content.Items;
 
 namespace Content.Infrastructure.Services.Inventory
 {
@@ -26,7 +26,7 @@ namespace Content.Infrastructure.Services.Inventory
         {
             itemSlotData = null;
 
-            if (_persistentDataService.Inventory.ItemSlots[itemSlotIndex].Item == null)
+            if (_persistentDataService.Inventory.ItemSlots[itemSlotIndex].InventoryItem == null)
                 return false;
 
             itemSlotData = _persistentDataService.Inventory.ItemSlots[itemSlotIndex];
@@ -34,7 +34,7 @@ namespace Content.Infrastructure.Services.Inventory
             return true;
         }
 
-        public bool TryAddInventoryItem(ItemBase item)
+        public bool TryAddInventoryItem(InventoryItem inventoryItem)
         {
             if (TryFindFreeInventorySlot(out int freeSlotIndex))
             {
@@ -47,7 +47,7 @@ namespace Content.Infrastructure.Services.Inventory
         public void DeleteInventoryItem(int itemSlotIndex)
         {
             ItemSlotData itemSlot = _persistentDataService.Inventory.ItemSlots[itemSlotIndex];
-            itemSlot.Item = null;
+            itemSlot.InventoryItem = null;
             itemSlot.Quantity = -1;
 
             OnInventorySlotUpdated?.Invoke(itemSlotIndex);

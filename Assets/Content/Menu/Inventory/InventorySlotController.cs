@@ -4,16 +4,21 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Content.Menu
+namespace Content.Menu.Inventory
 {
     public class InventorySlotController : MonoBehaviour,
         IDragHandler, IBeginDragHandler, IEndDragHandler,
         IPointerEnterHandler, IPointerExitHandler
     {
+        private const int SlotQuantityEmpty = -1;
+
         [SerializeField] private Button clickButton = null;
+        [SerializeField] private Image itemIcon = null;
         [SerializeField] private TextMeshProUGUI quantityText = null;
 
         public int SlotIndex { get; private set; }
+        public bool IsEmpty { get; private set; }
+        public Sprite SlotItemSprite => itemIcon.sprite;
 
         public event Action<int> OnInventorySlotClicked;
         public event Action<int> OnInventorySlotDragStarted;
@@ -32,21 +37,26 @@ namespace Content.Menu
         {
             string textValue = value > 1 ? value.ToString() : string.Empty;
             quantityText.text = textValue;
+
+            IsEmpty = value == SlotQuantityEmpty;
+        }
+
+        public void UpdateSlotItemIcon(Sprite value)
+        {
+            itemIcon.sprite = value;
+            itemIcon.enabled = value != null;
         }
 
         public void SetSlotEmpty()
         {
-            UpdateSlotItemQuantity(0);
+            UpdateSlotItemIcon(null);
+            UpdateSlotItemQuantity(SlotQuantityEmpty);
         }
 
         public void OnBeginDrag(PointerEventData eventData) => OnInventorySlotDragStarted?.Invoke(SlotIndex);
-
         public void OnEndDrag(PointerEventData eventData) => OnInventorySlotDragEnded?.Invoke();
-
         public void OnPointerEnter(PointerEventData eventData) => OnInventorySlotHoverStarted?.Invoke(SlotIndex);
-
         public void OnPointerExit(PointerEventData eventData) => OnInventorySlotHoverEnded?.Invoke();
-
         public void OnDrag(PointerEventData eventData) { }
     }
 }

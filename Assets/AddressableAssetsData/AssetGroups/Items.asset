@@ -10,35 +10,45 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: UI
+  m_Name: Items
   m_EditorClassIdentifier: 
-  m_GroupName: UI
+  m_GroupName: Items
   m_Data:
     m_SerializedData: []
-  m_GUID: 15b918f87ce15ca4d9c172b03315c8f7
+  m_GUID: 6f917cb9dd3548142ae78ff417c70f40
   m_SerializeEntries:
-  - m_GUID: 94a5684801af46f4fbc7a9569136b6d0
-    m_Address: PFB_UIRoot
+  - m_GUID: a3a51cfddaa579c4baaa9301bdad8057
+    m_Address: Item_Ammo_Rifle
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6e3cc32576cefaf47b6f0af6e83f0ee4
-    m_Address: PFB_InventoryHUD
+  - m_GUID: 6b0fb6fd448bfc542a1b2c55848e5df4
+    m_Address: Item_Body_Jacket
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9b5061507bd23f24aaaa7101d7dc8f5c
-    m_Address: PFB_InventorySlot
+  - m_GUID: 9ef8ff66486eb7e4bbcb557731fa2a67
+    m_Address: Item_Head_Cap
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4c5ae60c994d77a4a8f0c5cd4fd3cf8c
-    m_Address: PFB_InventoryDragPreview
+  - m_GUID: b7ceca9afa3800f42afe1f1f9f86e9e3
+    m_Address: Item_Heal_Pills
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 37eba122203c5924189d42f6184f43bc
-    m_Address: PFB_EquipmentHUD
+  - m_GUID: 4f44c635c87b5d442a1d4920618ae615
+    m_Address: Item_Body_Vest
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1218258f75f4eb48ab7cd08b1b9fcb2
+    m_Address: Item_Head_Helmet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c144aa0b59256cb4fa5a23d179c34e08
+    m_Address: Item_Ammo_Pistol
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -46,5 +56,5 @@ MonoBehaviour:
   m_Settings: {fileID: 11400000, guid: 8f1c347b552e26843a4f492813d808a3, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 1f9e14087ba06ae47bc8c65b895ee54f, type: 2}
-    - {fileID: 11400000, guid: cc0f6971f7487b0498789c8d731c2dda, type: 2}
+    - {fileID: 11400000, guid: feb03f3da70ad854c9b491bbceb2978d, type: 2}
+    - {fileID: 11400000, guid: 1d87589f9f8d57843a98831b0715f80a, type: 2}

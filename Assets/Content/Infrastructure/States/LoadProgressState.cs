@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Content.Data;
+using Content.Gameplay.Items;
 using Content.Infrastructure.Services.PersistentData;
 using Content.Infrastructure.Services.SaveLoad;
 using Content.Infrastructure.States.Interfaces;
-using Content.Items;
+using Cysharp.Threading.Tasks;
 
 namespace Content.Infrastructure.States
 {
@@ -23,9 +24,9 @@ namespace Content.Infrastructure.States
             _saveLoadService = saveLoadService;
         }
 
-        public void Enter()
+        public async void Enter()
         {
-            LoadProgressOrCreateNew();
+            await LoadProgressOrCreateNew();
 
             _stateMachine.Enter<LoadMetaState>();
         }
@@ -35,7 +36,7 @@ namespace Content.Infrastructure.States
 
         }
 
-        private async void LoadProgressOrCreateNew()
+        private async UniTask LoadProgressOrCreateNew()
         {
             _persistentDataService.Inventory = await _saveLoadService.LoadInventory() ?? CreateNewInventory();
         }
@@ -49,36 +50,63 @@ namespace Content.Infrastructure.States
 
             for (int i = 0; i < inventoryData.ItemSlots.Length; i++)
             {
+                InventoryItem randomInventoryItem = GetRandomItem();
+
                 inventoryData.ItemSlots[i] = new ItemSlotData
                 {
-                    Item = GetRandomItem(),
-                    Quantity = UnityEngine.Random.Range(1, 5)
+                    InventoryItem = randomInventoryItem,
+                    Quantity = randomInventoryItem == null ? -1 : UnityEngine.Random.Range(1, randomInventoryItem.MaxStackQuantity)
                 };
             }
 
             return inventoryData;
         }
 
-        private ItemBase GetRandomItem()
+        private InventoryItem GetRandomItem()
         {
-            List<ItemBase> itemVariations = new List<ItemBase>
+            List<InventoryItem> itemVariations = new List<InventoryItem>
             {
                 new BodyItem
                 {
-                    ID = 0,
-                    Name = "Test Body Item",
+                    Id = "Item_Body_Jacket",
+                    Name = "Jacket",
                     MaxStackQuantity = 1,
-                    Weight = UnityEngine.Random.Range(1, 5),
-                    Defence = UnityEngine.Random.Range(1, 10),
+                    Weight = 2f,
+                    Defence = UnityEngine.Random.Range(1, 2),
+                },
+                new BodyItem
+                {
+                    Id = "Item_Body_Vest",
+                    Name = "Vest",
+                    MaxStackQuantity = 1,
+                    Weight = 20f,
+                    Defence = UnityEngine.Random.Range(8, 10),
                 },
                 new HeadItem
                 {
-                    ID = 0,
-                    Name = "Test Head Item",
+                    Id = "Item_Head_Helmet",
+                    Name = "Helmet",
                     MaxStackQuantity = 1,
-                    Weight = UnityEngine.Random.Range(1, 5),
-                    Defence = UnityEngine.Random.Range(1, 10),
+                    Weight = 10f,
+                    Defence = UnityEngine.Random.Range(5, 10),
                 },
+                new HeadItem
+                {
+                    Id = "Item_Head_Cap",
+                    Name = "Cap",
+                    MaxStackQuantity = 1,
+                    Weight = 1f,
+                    Defence = UnityEngine.Random.Range(1, 3),
+                },
+                new AmmoItem
+                {
+                    Id = "Item_Ammo_Rifle",
+                    Name = "Rifle Ammo",
+                    MaxStackQuantity = 50,
+                    Weight = 0.1f,
+                    Damage = 2
+                },
+                null
             };
 
             return itemVariations[UnityEngine.Random.Range(0, itemVariations.Count)];

@@ -2,6 +2,7 @@
 using Content.Data;
 using Content.Infrastructure.Services.Logging;
 using Content.Infrastructure.Services.PersistentData;
+using Content.StaticData.Converters;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using static Newtonsoft.Json.JsonConvert;
@@ -11,6 +12,7 @@ namespace Content.Infrastructure.Services.SaveLoad
     public class SaveLoadServiceJsonFile : ISaveLoadService
     {
         private const string InventorySaveFileName = "Inventory.json";
+        private const string EquipmentSaveFileName = "Equipment.json";
 
         private readonly IPersistentDataService _persistentDataService;
         private readonly ILoggingService _loggingService;
@@ -25,10 +27,7 @@ namespace Content.Infrastructure.Services.SaveLoad
 
         public void SaveInventory()
         {
-            string inventoryStateJson = SerializeObject(_persistentDataService.Inventory, Formatting.Indented, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
+            string inventoryStateJson = SerializeObject(_persistentDataService.Inventory, Formatting.Indented);
             using StreamWriter sw = File.CreateText(GetInventorySaveFilePath());
             sw.WriteLine(inventoryStateJson);
 
@@ -40,10 +39,9 @@ namespace Content.Infrastructure.Services.SaveLoad
             if (!File.Exists(GetInventorySaveFilePath()))
                 return UniTask.FromResult((InventoryData)null);
 
-            InventoryData inventoryState = DeserializeObject<InventoryData>(File.ReadAllText(GetInventorySaveFilePath()), new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            });
+            InventoryData inventoryState = DeserializeObject<InventoryData>(
+                File.ReadAllText(GetInventorySaveFilePath()),
+                new InventoryItemConverter());
 
             _loggingService.LogMessage($"Loaded inventory from file at {GetInventorySaveFilePath()}", this);
 
@@ -52,5 +50,6 @@ namespace Content.Infrastructure.Services.SaveLoad
 
         private string GetInventorySaveFilePath() =>
             $"{UnityEngine.Application.persistentDataPath}{Path.DirectorySeparatorChar}{InventorySaveFileName}";
+
     }
 }
